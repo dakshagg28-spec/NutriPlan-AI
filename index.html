@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriPlan - 4-Week Diet & Smart Quantity Shopping Studio</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            900: '#064e3b',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float-1': 'floatOne 14s ease-in-out infinite',
+                        'float-2': 'floatTwo 18s ease-in-out infinite',
+                        'float-3': 'floatThree 20s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        floatOne: {
+                            '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '50%': { transform: 'translate(60px, -40px) scale(1.15)' },
+                        },
+                        floatTwo: {
+                            '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '50%': { transform: 'translate(-50px, 50px) scale(1.2)' },
+                        },
+                        floatThree: {
+                            '0%, 100%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '50%': { transform: 'translate(40px, 40px) scale(0.9)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card-light {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .glass-nav {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glow-text {
+            background: linear-gradient(135deg, #34d399 0%, #38bdf8 50%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #090d16; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #10b981; }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; color: black !important; }
+            .glass-card { background: white !important; border: 1px solid #ccc !important; color: black !important; }
+            .text-slate-100, .text-slate-200, .text-slate-300, .text-slate-400 { color: #1e293b !important; }
+        }
+    </style>
+</head>
+<body class="h-full font-sans text-slate-100 antialiased flex flex-col min-h-screen bg-slate-950 relative overflow-x-hidden">
+
+    <!-- DYNAMIC BACKGROUND -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden no-print">
+        <div class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-emerald-500/20 blur-[120px] animate-float-1"></div>
+        <div class="absolute top-1/3 -right-32 w-96 h-96 rounded-full bg-cyan-500/15 blur-[140px] animate-float-2"></div>
+        <div class="absolute -bottom-32 left-1/3 w-[500px] h-[500px] rounded-full bg-purple-600/15 blur-[160px] animate-float-3"></div>
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b15_1px,transparent_1px),linear-gradient(to_bottom,#1e293b15_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="glass-nav sticky top-0 z-40 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="resetToForm()">
+                    <div class="bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-500 p-2.5 rounded-xl text-slate-950 font-bold shadow-lg shadow-emerald-500/20">
+                        <i data-lucide="sparkles" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <span class="text-xl font-extrabold tracking-tight glow-text">NutriPlan Studio</span>
+                        <span class="block text-[10px] text-emerald-400/80 font-bold uppercase tracking-widest -mt-1">Pro 4-Week AI Diet & Quantities</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <button id="reset-btn" onclick="resetToForm()" class="hidden text-xs font-semibold px-3.5 py-2 rounded-xl bg-slate-800/80 border border-slate-700/60 text-slate-300 hover:bg-slate-700 hover:text-white transition flex items-center space-x-1.5">
+                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                        <span>New Custom Plan</span>
+                    </button>
+                    <button onclick="scrollToForm()" class="text-xs font-semibold px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 transition">
+                        Create Diet Chart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 relative z-10">
+        
+        <!-- FORM SECTION -->
+        <section id="form-section" class="max-w-3xl mx-auto">
+            <div class="text-center mb-10">
+                <span class="inline-flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest mb-3">
+                    <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+                    <span>Next-Gen Nutrition Planner</span>
+                </span>
+                <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">Personalized 4-Week Diet & Grocery Engine</h1>
+                <p class="text-slate-400 mt-3 text-sm sm:text-base max-w-xl mx-auto">Generate comprehensive daily meal charts (5 meals/day) and auto-calculate exact grocery ingredient quantities to buy for the week.</p>
+            </div>
+
+            <!-- Form Card -->
+            <div class="glass-card rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
+                <form id="diet-form" onsubmit="handleFormSubmit(event)" class="space-y-8">
+                    
+                    <!-- 1. Dietary Preference -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center space-x-2">
+                            <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">1</span>
+                            <span>Dietary Preference</span>
+                        </label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <label class="relative flex flex-col items-center p-4 border border-slate-700/60 rounded-2xl cursor-pointer hover:border-emerald-500/50 transition glass-card-light text-slate-300 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-500/10 has-[:checked]:text-emerald-400">
+                                <input type="radio" name="dietType" value="vegetarian" class="sr-only" checked>
+                                <i data-lucide="leaf" class="w-6 h-6 mb-2"></i>
+                                <span class="text-xs sm:text-sm font-bold">Vegetarian</span>
+                            </label>
+                            
+                            <label class="relative flex flex-col items-center p-4 border border-slate-700/60 rounded-2xl cursor-pointer hover:border-emerald-500/50 transition glass-card-light text-slate-300 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-500/10 has-[:checked]:text-emerald-400">
+                                <input type="radio" name="dietType" value="non-vegetarian" class="sr-only">
+                                <i data-lucide="drumstick" class="w-6 h-6 mb-2"></i>
+                                <span class="text-xs sm:text-sm font-bold">Non-Veg</span>
+                            </label>
+
+                            <label class="relative flex flex-col items-center p-4 border border-slate-700/60 rounded-2xl cursor-pointer hover:border-emerald-500/50 transition glass-card-light text-slate-300 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-500/10 has-[:checked]:text-emerald-400">
+                                <input type="radio" name="dietType" value="vegan" class="sr-only">
+                                <i data-lucide="sprout" class="w-6 h-6 mb-2"></i>
+                                <span class="text-xs sm:text-sm font-bold">Vegan</span>
+                            </label>
+
+                            <label class="relative flex flex-col items-center p-4 border border-slate-700/60 rounded-2xl cursor-pointer hover:border-emerald-500/50 transition glass-card-light text-slate-300 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-500/10 has-[:checked]:text-emerald-400">
+                                <input type="radio" name="dietType" value="eggetarian" class="sr-only">
+                                <i data-lucide="egg" class="w-6 h-6 mb-2"></i>
+                                <span class="text-xs sm:text-sm font-bold">Eggetarian</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- 2. Goal & Budget -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center space-x-2">
+                                <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">2</span>
+                                <span>Fitness Goal</span>
+                            </label>
+                            <select name="goal" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-sm rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                <option value="weight_loss" selected>Weight Loss (Calorie Deficit ~1,600 kcal)</option>
+                                <option value="muscle_gain">Muscle Gain & Weight (~2,500 kcal)</option>
+                                <option value="maintenance">Healthy Living / Maintenance (~2,000 kcal)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center space-x-2">
+                                <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px]">3</span>
+                                <span>Weekly Grocery Budget ($ / ₹)</span>
+                            </label>
+                            <select name="budget" class="w-full bg-slate-900 border border-slate-700 text-slate-200 text-sm rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                                <option value="budget">Budget Friendly (Staples & Bulk)</option>
+                                <option value="standard" selected>Standard Balanced Budget</option>
+                                <option value="premium">Premium / Organic Specialties</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-4 px-6 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-slate-950 font-extrabold text-base rounded-2xl shadow-xl shadow-emerald-500/20 transition transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center space-x-2">
+                        <i data-lucide="wand-2" class="w-5 h-5"></i>
+                        <span>Generate 4-Week Plan & Quantity Grocery List</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- RESULTS DASHBOARD -->
+        <section id="results-section" class="hidden">
+            
+            <!-- Summary Header Banner -->
+            <div class="glass-card rounded-3xl p-6 sm:p-8 mb-8 border border-slate-700/50 shadow-2xl relative">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                    <div>
+                        <div class="flex flex-wrap gap-2 mb-2">
+                            <span id="badge-diet" class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-extrabold px-3 py-1 rounded-lg uppercase">Vegetarian</span>
+                            <span id="badge-goal" class="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-extrabold px-3 py-1 rounded-lg uppercase">Weight Loss</span>
+                            <span id="badge-budget" class="bg-purple-500/20 text-purple-400 border border-purple-500/30 text-xs font-extrabold px-3 py-1 rounded-lg uppercase">Standard Budget</span>
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Your Custom 4-Week Nutrition Blueprint</h2>
+                        <p class="text-slate-400 text-xs sm:text-sm mt-1">Daily breakdown with 5 meals/day + Exact grocery item quantities required.</p>
+                    </div>
+
+                    <div class="flex items-center gap-4">
+                        <!-- Macro Target Box -->
+                        <div class="glass-card-light p-4 rounded-2xl flex items-center justify-around sm:justify-between gap-4 text-center">
+                            <div>
+                                <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Calories</div>
+                                <div id="stat-calories" class="text-xl font-extrabold text-white">1,650 <span class="text-xs text-slate-400">kcal</span></div>
+                            </div>
+                            <div class="h-8 w-px bg-slate-700"></div>
+                            <div>
+                                <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Protein</div>
+                                <div id="stat-protein" class="text-xl font-extrabold text-emerald-400">110g</div>
+                            </div>
+                            <div class="h-8 w-px bg-slate-700"></div>
+                            <div>
+                                <div class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Carbs / Fats</div>
+                                <div id="stat-macros" class="text-xs font-bold text-slate-300 mt-1">180g / 45g</div>
+                            </div>
+                        </div>
+
+                        <!-- TOP RIGHT COMPACT DOWNLOAD DROPDOWN -->
+                        <div class="relative no-print">
+                            <button id="download-dropdown-btn" onclick="toggleDownloadMenu()" class="p-3 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-2xl text-xs font-extrabold transition flex items-center space-x-1.5 shadow-lg shadow-emerald-500/10">
+                                <i data-lucide="download" class="w-4 h-4"></i>
+                                <span class="hidden sm:inline">Download</span>
+                                <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                            </button>
+
+                            <!-- Dropdown Menu -->
+                            <div id="download-menu" class="hidden absolute right-0 mt-2 w-48 glass-card rounded-2xl border border-slate-700 shadow-2xl py-2 z-50">
+                                <button onclick="downloadDietPlanAsText(); toggleDownloadMenu();" class="w-full px-4 py-2 text-left text-xs text-slate-200 hover:bg-slate-800 hover:text-emerald-400 flex items-center space-x-2">
+                                    <i data-lucide="file-text" class="w-4 h-4 text-emerald-400"></i>
+                                    <span>Download Text (.txt)</span>
+                                </button>
+                                <button onclick="window.print(); toggleDownloadMenu();" class="w-full px-4 py-2 text-left text-xs text-slate-200 hover:bg-slate-800 hover:text-purple-400 flex items-center space-x-2">
+                                    <i data-lucide="file-down" class="w-4 h-4 text-purple-400"></i>
+                                    <span>Export PDF / Print</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WEEK TABS & UTILITIES -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4 mb-8 no-print">
+                <div class="flex space-x-2 overflow-x-auto pb-1">
+                    <button onclick="switchWeek(1)" id="tab-week-1" class="week-tab px-5 py-2.5 font-extrabold text-xs sm:text-sm rounded-xl transition flex items-center space-x-2 bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20">
+                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                        <span>Week 1 Plan</span>
+                    </button>
+                    <button onclick="switchWeek(2)" id="tab-week-2" class="week-tab px-5 py-2.5 font-extrabold text-xs sm:text-sm rounded-xl transition flex items-center space-x-2 bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700">
+                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                        <span>Week 2 Plan</span>
+                    </button>
+                    <button onclick="switchWeek(3)" id="tab-week-3" class="week-tab px-5 py-2.5 font-extrabold text-xs sm:text-sm rounded-xl transition flex items-center space-x-2 bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700">
+                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                        <span>Week 3 Plan</span>
+                    </button>
+                    <button onclick="switchWeek(4)" id="tab-week-4" class="week-tab px-5 py-2.5 font-extrabold text-xs sm:text-sm rounded-xl transition flex items-center space-x-2 bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700">
+                        <i data-lucide="calendar" class="w-4 h-4"></i>
+                        <span>Week 4 Plan</span>
+                    </button>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3">
+                    <button onclick="openShoppingListModal(false)" class="px-4 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-slate-950 rounded-xl text-xs sm:text-sm font-extrabold shadow-lg shadow-emerald-500/20 transition flex items-center space-x-2">
+                        <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+                        <span id="grocery-btn-label">Week 1 Quantity Grocery List</span>
+                    </button>
+
+                    <button onclick="openShoppingListModal(true)" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
+                        <i data-lucide="layers" class="w-4 h-4 text-cyan-400"></i>
+                        <span>Full 4-Week Bulk List</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- WEEKLY MEAL CONTAINER -->
+            <div id="days-container" class="space-y-6"></div>
+        </section>
+    </main>
+
+    <!-- SHOPPING LIST MODAL -->
+    <div id="shopping-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass-card rounded-3xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border border-slate-700/80">
+            <div class="p-6 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
+                <div class="flex items-center space-x-3">
+                    <div class="p-3 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-2xl">
+                        <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h3 id="modal-title" class="font-extrabold text-white text-xl">Week 1 Smart Grocery Checklist</h3>
+                        <p class="text-slate-400 text-xs">Calculated exact quantities required to cook all meals</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <button onclick="toggleUnits()" id="unit-toggle-btn" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 text-emerald-400 hover:bg-slate-700">
+                        Units: Metric (g/kg/ml)
+                    </button>
+                    <button onclick="closeShoppingListModal()" class="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-slate-800">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6 overflow-y-auto space-y-6 flex-1">
+                <div>
+                    <h4 class="text-xs font-extrabold text-emerald-400 uppercase tracking-widest mb-3 flex items-center space-x-2">
+                        <i data-lucide="apple" class="w-4 h-4"></i>
+                        <span>Fresh Produce (Vegetables & Fruits)</span>
+                    </h4>
+                    <div id="list-produce" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-extrabold text-amber-400 uppercase tracking-widest mb-3 flex items-center space-x-2">
+                        <i data-lucide="egg" class="w-4 h-4"></i>
+                        <span>Proteins, Poultry & Dairy</span>
+                    </h4>
+                    <div id="list-protein" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-extrabold text-yellow-500 uppercase tracking-widest mb-3 flex items-center space-x-2">
+                        <i data-lucide="wheat" class="w-4 h-4"></i>
+                        <span>Grains, Rice & Staples</span>
+                    </h4>
+                    <div id="list-grains" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-extrabold text-purple-400 uppercase tracking-widest mb-3 flex items-center space-x-2">
+                        <i data-lucide="flame" class="w-4 h-4"></i>
+                        <span>Nuts, Seeds & Cooking Oils</span>
+                    </h4>
+                    <div id="list-spices" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+                </div>
+            </div>
+
+            <div class="p-5 border-t border-slate-800 bg-slate-900/80 flex items-center justify-between no-print">
+                <span id="modal-item-count" class="text-xs font-semibold text-slate-400">0 items checked</span>
+                <div class="flex items-center space-x-3">
+                    <button onclick="downloadGroceryListAsText()" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-emerald-400 font-bold text-xs rounded-xl transition flex items-center space-x-1.5">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        <span>Download List (.txt)</span>
+                    </button>
+                    <button onclick="window.print()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs rounded-xl transition flex items-center space-x-1.5 border border-slate-700">
+                        <i data-lucide="printer" class="w-4 h-4"></i>
+                        <span>Print / Export PDF</span>
+                    </button>
+                    <button onclick="closeShoppingListModal()" class="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-extrabold text-xs rounded-xl transition">
+                        Done Shopping
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT ENGINE -->
+    <script>
+        let activePlan = null;
+        let currentWeek = 1;
+        let isImperial = false;
+
+        const INGREDIENT_QUANTITY_LOOKUP = {
+            "Oats": { qty: 60, unit: "g" },
+            "Whole Wheat Bread": { qty: 4, unit: "slices" },
+            "Eggs": { qty: 2, unit: "pcs" },
+            "Spinach": { qty: 100, unit: "g" },
+            "Chicken Breast": { qty: 200, unit: "g" },
+            "Paneer": { qty: 150, unit: "g" },
+            "Tofu": { qty: 150, unit: "g" },
+            "Salmon Fillet": { qty: 180, unit: "g" },
+            "Quinoa": { qty: 70, unit: "g" },
+            "Brown Rice": { qty: 80, unit: "g" },
+            "Chickpeas": { qty: 80, unit: "g" },
+            "Lentils": { qty: 75, unit: "g" },
+            "Greek Yogurt": { qty: 150, unit: "g" },
+            "Milk/Plant Milk": { qty: 250, unit: "ml" },
+            "Almonds": { qty: 25, unit: "g" },
+            "Chia Seeds": { qty: 15, unit: "g" },
+            "Avocado": { qty: 0.5, unit: "pcs" },
+            "Broccoli": { qty: 120, unit: "g" },
+            "Sweet Potato": { qty: 150, unit: "g" },
+            "Tomatoes": { qty: 100, unit: "g" },
+            "Cucumber": { qty: 100, unit: "g" },
+            "Olive Oil": { qty: 15, unit: "ml" },
+            "Peanut Butter": { qty: 30, unit: "g" }
+        };
+
+        const MEAL_DATABASE = {
+            "vegetarian": {
+                breakfasts: [
+                    { name: "Oatmeal with Almonds & Berries", ingredients: ["Oats", "Almonds", "Milk/Plant Milk"], cal: 380, p: 14, c: 55, f: 10, prep: "Boil oats in milk, top with crushed almonds and berries." },
+                    { name: "Avocado & Spinach Toast with Seeds", ingredients: ["Whole Wheat Bread", "Avocado", "Spinach", "Chia Seeds"], cal: 360, p: 11, c: 42, f: 16, prep: "Mash avocado on toasted bread, add sautéed spinach and seeds." },
+                    { name: "Greek Yogurt Parfait with Honey", ingredients: ["Greek Yogurt", "Almonds", "Chia Seeds"], cal: 320, p: 20, c: 30, f: 9, prep: "Layer yogurt with honey, chia seeds, and chopped nuts." },
+                    { name: "Paneer & Veggie Breakfast Wrap", ingredients: ["Whole Wheat Bread", "Paneer", "Spinach"], cal: 420, p: 22, c: 38, f: 18, prep: "Sauté paneer with spinach and wrap in whole wheat tortilla." }
+                ],
+                mSnacks: [
+                    { name: "Handful of Almonds & Green Tea", ingredients: ["Almonds"], cal: 160, p: 6, c: 5, f: 14, prep: "Raw or roasted un-salted almonds." },
+                    { name: "Greek Yogurt with Chia", ingredients: ["Greek Yogurt", "Chia Seeds"], cal: 180, p: 14, c: 12, f: 6, prep: "Mix chia seeds in chilled greek yogurt." }
+                ],
+                lunches: [
+                    { name: "Quinoa Chickpea Power Bowl", ingredients: ["Quinoa", "Chickpeas", "Cucumber", "Tomatoes", "Olive Oil"], cal: 520, p: 21, c: 75, f: 14, prep: "Combine cooked quinoa with boiled chickpeas and fresh diced veggies." },
+                    { name: "Spinach Lentil Curry with Brown Rice", ingredients: ["Lentils", "Spinach", "Brown Rice", "Olive Oil"], cal: 540, p: 24, c: 80, f: 10, prep: "Simmer yellow lentils with chopped spinach; serve with brown rice." },
+                    { name: "Grilled Paneer & Veggie Salad", ingredients: ["Paneer", "Broccoli", "Tomatoes", "Olive Oil"], cal: 480, p: 26, c: 20, f: 32, prep: "Pan-grill paneer cubes and broccoli with olive oil and spices." }
+                ],
+                eSnacks: [
+                    { name: "Roasted Chickpeas with Spices", ingredients: ["Chickpeas", "Olive Oil"], cal: 180, p: 8, c: 26, f: 5, prep: "Air-fry or bake chickpeas with paprika and salt." },
+                    { name: "Cucumber & Tomato Salad", ingredients: ["Cucumber", "Tomatoes", "Olive Oil"], cal: 120, p: 3, c: 10, f: 7, prep: "Slice fresh cucumber and tomatoes with lemon dressing." }
+                ],
+                dinners: [
+                    { name: "Tofu & Broccoli Stir-Fry with Sweet Potato", ingredients: ["Tofu", "Broccoli", "Sweet Potato", "Olive Oil"], cal: 460, p: 25, c: 45, f: 16, prep: "Stir-fry tofu cubes with broccoli; serve alongside baked sweet potato." },
+                    { name: "Lentil Soup with Roasted Vegetables", ingredients: ["Lentils", "Broccoli", "Tomatoes", "Whole Wheat Bread"], cal: 440, p: 23, c: 62, f: 8, prep: "Warm lentil soup served with toasted whole wheat bread." }
+                ]
+            },
+            "non-vegetarian": {
+                breakfasts: [
+                    { name: "Scrambled Eggs with Spinach & Toast", ingredients: ["Eggs", "Spinach", "Whole Wheat Bread"], cal: 390, p: 24, c: 32, f: 17, prep: "Scramble 2 eggs with fresh spinach; serve on whole wheat toast." },
+                    { name: "Chicken & Egg Breakfast Wrap", ingredients: ["Whole Wheat Bread", "Chicken Breast", "Eggs"], cal: 450, p: 35, c: 35, f: 14, prep: "Grill chicken slices with egg whites in a wheat wrap." }
+                ],
+                mSnacks: [
+                    { name: "Boiled Egg & Almonds", ingredients: ["Eggs", "Almonds"], cal: 210, p: 13, c: 4, f: 15, prep: "1 hard boiled egg with 10 almonds." }
+                ],
+                lunches: [
+                    { name: "Grilled Chicken Breast with Quinoa & Broccoli", ingredients: ["Chicken Breast", "Quinoa", "Broccoli", "Olive Oil"], cal: 560, p: 48, c: 46, f: 14, prep: "Season chicken with herbs, grill and pair with quinoa and steamed broccoli." },
+                    { name: "Salmon Bowl with Brown Rice & Avocado", ingredients: ["Salmon Fillet", "Brown Rice", "Avocado", "Cucumber"], cal: 590, p: 42, c: 50, f: 22, prep: "Pan-sear salmon fillet with lemon; serve over brown rice with avocado." }
+                ],
+                eSnacks: [
+                    { name: "Greek Yogurt with Protein", ingredients: ["Greek Yogurt", "Chia Seeds"], cal: 190, p: 18, c: 14, f: 5, prep: "Whisk Greek yogurt with chia seeds." }
+                ],
+                dinners: [
+                    { name: "Baked Salmon with Sweet Potato & Asparagus", ingredients: ["Salmon Fillet", "Sweet Potato", "Broccoli", "Olive Oil"], cal: 520, p: 38, c: 38, f: 20, prep: "Bake salmon at 200°C for 15 mins alongside sweet potato wedges." },
+                    { name: "Chicken breast stir fry with Brown Rice", ingredients: ["Chicken Breast", "Broccoli", "Brown Rice", "Olive Oil"], cal: 490, p: 44, c: 45, f: 11, prep: "Sauté chicken strips with broccoli florets over rice." }
+                ]
+            }
+        };
+
+        MEAL_DATABASE['vegan'] = MEAL_DATABASE['vegetarian'];
+        MEAL_DATABASE['eggetarian'] = MEAL_DATABASE['vegetarian'];
+
+        const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+        window.onload = function() {
+            lucide.createIcons();
+        };
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const dietType = formData.get('dietType');
+            const goal = formData.get('goal');
+            const budget = formData.get('budget');
+
+            activePlan = generateFull4WeekPlan(dietType, goal, budget);
+            
+            document.getElementById('badge-diet').innerText = dietType.replace('-', ' ');
+            document.getElementById('badge-goal').innerText = goal.replace('_', ' ');
+            document.getElementById('badge-budget').innerText = budget + " budget";
+
+            currentWeek = 1;
+            renderWeek(currentWeek);
+
+            document.getElementById('form-section').classList.add('hidden');
+            document.getElementById('results-section').classList.remove('hidden');
+            document.getElementById('reset-btn').classList.remove('hidden');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function generateFull4WeekPlan(dietType, goal, budget) {
+            const pool = MEAL_DATABASE[dietType] || MEAL_DATABASE['vegetarian'];
+            const weeks = {};
+
+            let targetCal = 1800;
+            if (goal === 'weight_loss') targetCal = 1600;
+            if (goal === 'muscle_gain') targetCal = 2450;
+
+            for (let w = 1; w <= 4; w++) {
+                const daysObj = {};
+                DAYS.forEach((day, dayIdx) => {
+                    const b = pool.breakfasts[(w + dayIdx) % pool.breakfasts.length];
+                    const ms = pool.mSnacks[(w + dayIdx) % pool.mSnacks.length];
+                    const l = pool.lunches[(w + dayIdx) % pool.lunches.length];
+                    const es = pool.eSnacks[(w + dayIdx) % pool.eSnacks.length];
+                    const d = pool.dinners[(w + dayIdx) % pool.dinners.length];
+
+                    daysObj[day] = { breakfast: b, mSnack: ms, lunch: l, eSnack: es, dinner: d };
+                });
+
+                weeks[w] = { days: daysObj, calories: targetCal };
+            }
+
+            return { dietType, goal, budget, weeks };
+        }
+
+        function switchWeek(weekNum) {
+            currentWeek = weekNum;
+            document.querySelectorAll('.week-tab').forEach((tab, idx) => {
+                if (idx + 1 === weekNum) {
+                    tab.className = "week-tab px-5 py-2.5 font-extrabold text-xs sm:text-sm rounded-xl transition flex items-center space-x-2 bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20";
+                } else {
+                    tab.className = "week-tab px-5 py-2.5 font-extrabold text-xs sm:text-sm rounded-xl transition flex items-center space-x-2 bg-slate-800/80 text-slate-400 hover:text-white hover:bg-slate-700";
+                }
+            });
+
+            document.getElementById('grocery-btn-label').innerText = `Week ${weekNum} Quantity Grocery List`;
+            renderWeek(weekNum);
+        }
+
+        function renderWeek(weekNum) {
+            const weekData = activePlan.weeks[weekNum];
+            const container = document.getElementById('days-container');
+            container.innerHTML = '';
+
+            DAYS.forEach(day => {
+                const dayMeal = weekData.days[day];
+                const card = document.createElement('div');
+                card.className = "glass-card rounded-3xl border border-slate-700/60 overflow-hidden shadow-xl";
+                card.innerHTML = `
+                    <div class="bg-slate-900/80 px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <span class="w-3 h-3 rounded-full bg-emerald-400 shadow-lg shadow-emerald-400/50"></span>
+                            <h3 class="font-extrabold text-white text-lg sm:text-xl">${day}</h3>
+                        </div>
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Daily Chart</span>
+                    </div>
+
+                    <div class="p-6 grid grid-cols-1 md:grid-cols-5 gap-4">
+                        ${renderMealBox("Breakfast", "sun", "amber-400", dayMeal.breakfast)}
+                        ${renderMealBox("Morning Snack", "coffee", "cyan-400", dayMeal.mSnack)}
+                        ${renderMealBox("Lunch", "utensils", "emerald-400", dayMeal.lunch)}
+                        ${renderMealBox("Evening Snack", "apple", "purple-400", dayMeal.eSnack)}
+                        ${renderMealBox("Dinner", "moon", "indigo-400", dayMeal.dinner)}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            lucide.createIcons();
+        }
+
+        function renderMealBox(title, icon, color, meal) {
+            return `
+                <div class="glass-card-light p-4 rounded-2xl flex flex-col justify-between border border-slate-800 hover:border-slate-700 transition">
+                    <div>
+                        <div class="flex items-center justify-between text-${color} mb-2">
+                            <div class="flex items-center space-x-1.5">
+                                <i data-lucide="${icon}" class="w-4 h-4"></i>
+                                <span class="text-[10px] font-extrabold uppercase tracking-wider">${title}</span>
+                            </div>
+                            <span class="text-[10px] text-slate-400 font-bold">${meal.cal} kcal</span>
+                        </div>
+                        <h4 class="font-bold text-slate-100 text-xs sm:text-sm mb-1">${meal.name}</h4>
+                        <p class="text-[11px] text-slate-400 leading-snug mb-3">${meal.ingredients.join(', ')}</p>
+                    </div>
+                    <div class="pt-2 border-t border-slate-800/80">
+                        <span class="text-[10px] text-emerald-400/90 font-semibold italic block">Tip: ${meal.prep}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleDownloadMenu() {
+            const menu = document.getElementById('download-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function openShoppingListModal(isFullMonth = false) {
+            if (!activePlan) return;
+
+            const title = isFullMonth ? "Full 4-Week Bulk Grocery List" : `Week ${currentWeek} Quantity Grocery Checklist`;
+            document.getElementById('modal-title').innerText = title;
+
+            const totals = {};
+            const targetWeeks = isFullMonth ? [1, 2, 3, 4] : [currentWeek];
+
+            targetWeeks.forEach(wNum => {
+                const weekData = activePlan.weeks[wNum];
+                DAYS.forEach(day => {
+                    const dayObj = weekData.days[day];
+                    [dayObj.breakfast, dayObj.mSnack, dayObj.lunch, dayObj.eSnack, dayObj.dinner].forEach(meal => {
+                        meal.ingredients.forEach(ing => {
+                            const info = INGREDIENT_QUANTITY_LOOKUP[ing] || { qty: 100, unit: "g" };
+                            if (!totals[ing]) {
+                                totals[ing] = { qty: 0, unit: info.unit };
+                            }
+                            totals[ing].qty += info.qty;
+                        });
+                    });
+                });
+            });
+
+            renderQuantifiedCategoryLists(totals);
+            document.getElementById('shopping-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function renderQuantifiedCategoryLists(totals) {
+            const produce = [], protein = [], grains = [], spices = [];
+
+            Object.keys(totals).forEach(ing => {
+                const itemData = totals[ing];
+                const formattedQty = formatQuantity(itemData.qty, itemData.unit);
+                const displayString = `${ing} - ${formattedQty}`;
+
+                const lower = ing.toLowerCase();
+                if (lower.includes('spinach') || lower.includes('avocado') || lower.includes('broccoli') || lower.includes('tomatoes') || lower.includes('cucumber') || lower.includes('sweet potato')) {
+                    produce.push(displayString);
+                } else if (lower.includes('egg') || lower.includes('chicken') || lower.includes('paneer') || lower.includes('tofu') || lower.includes('salmon') || lower.includes('greek yogurt') || lower.includes('milk')) {
+                    protein.push(displayString);
+                } else if (lower.includes('oats') || lower.includes('bread') || lower.includes('quinoa') || lower.includes('rice') || lower.includes('chickpeas') || lower.includes('lentils')) {
+                    grains.push(displayString);
+                } else {
+                    spices.push(displayString);
+                }
+            });
+
+            renderCategoryItems('list-produce', produce);
+            renderCategoryItems('list-protein', protein);
+            renderCategoryItems('list-grains', grains);
+            renderCategoryItems('list-spices', spices);
+
+            updateItemCount();
+        }
+
+        function formatQuantity(qty, unit) {
+            if (isImperial) {
+                if (unit === 'g') return `${(qty * 0.035274).toFixed(1)} oz`;
+                if (unit === 'ml') return `${(qty * 0.033814).toFixed(1)} fl oz`;
+            }
+            if (unit === 'g' && qty >= 1000) return `${(qty / 1000).toFixed(1)} kg`;
+            if (unit === 'ml' && qty >= 1000) return `${(qty / 1000).toFixed(1)} L`;
+            return `${qty} ${unit}`;
+        }
+
+        function renderCategoryItems(containerId, items) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            if (items.length === 0) {
+                container.innerHTML = `<span class="text-xs text-slate-500 italic">None needed</span>`;
+                return;
+            }
+
+            items.forEach((item, index) => {
+                const itemId = `${containerId}-${index}`;
+                const label = document.createElement('label');
+                label.className = "flex items-center space-x-3 p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 cursor-pointer transition";
+                label.innerHTML = `
+                    <input type="checkbox" id="${itemId}" onchange="updateItemCount()" class="w-4 h-4 rounded text-emerald-500 focus:ring-emerald-500 border-slate-700 bg-slate-800">
+                    <span class="text-xs font-semibold text-slate-200">${item}</span>
+                `;
+                container.appendChild(label);
+            });
+        }
+
+        function toggleUnits() {
+            isImperial = !isImperial;
+            document.getElementById('unit-toggle-btn').innerText = isImperial ? "Units: Imperial (oz/lb)" : "Units: Metric (g/kg/ml)";
+            openShoppingListModal(document.getElementById('modal-title').innerText.includes("4-Week"));
+        }
+
+        function updateItemCount() {
+            const total = document.querySelectorAll('#shopping-modal input[type="checkbox"]').length;
+            const checked = document.querySelectorAll('#shopping-modal input[type="checkbox"]:checked').length;
+            document.getElementById('modal-item-count').innerText = `${checked} of ${total} items checked`;
+        }
+
+        function closeShoppingListModal() {
+            document.getElementById('shopping-modal').classList.add('hidden');
+        }
+
+        function downloadDietPlanAsText() {
+            if (!activePlan) return;
+            let text = `==================================================\n`;
+            text += `  NUTRIPLAN STUDIO - CUSTOM 4-WEEK DIET PLAN\n`;
+            text += `==================================================\n`;
+            text += `Dietary Preference: ${activePlan.dietType.toUpperCase()}\n`;
+            text += `Fitness Goal:       ${activePlan.goal.toUpperCase().replace('_', ' ')}\n`;
+            text += `Budget Profile:     ${activePlan.budget.toUpperCase()}\n\n`;
+
+            for (let w = 1; w <= 4; w++) {
+                text += `==================================================\n`;
+                text += `  WEEK ${w} MEAL CHART\n`;
+                text += `==================================================\n`;
+                const weekObj = activePlan.weeks[w];
+
+                DAYS.forEach(day => {
+                    const dm = weekObj.days[day];
+                    text += `\n--- ${day.toUpperCase()} ---\n`;
+                    text += `Breakfast (${dm.breakfast.cal} kcal): ${dm.breakfast.name}\n   Ingredients: ${dm.breakfast.ingredients.join(', ')}\n`;
+                    text += `Morning Snack (${dm.mSnack.cal} kcal): ${dm.mSnack.name}\n`;
+                    text += `Lunch (${dm.lunch.cal} kcal): ${dm.lunch.name}\n   Ingredients: ${dm.lunch.ingredients.join(', ')}\n`;
+                    text += `Evening Snack (${dm.eSnack.cal} kcal): ${dm.eSnack.name}\n`;
+                    text += `Dinner (${dm.dinner.cal} kcal): ${dm.dinner.name}\n   Ingredients: ${dm.dinner.ingredients.join(', ')}\n`;
+                });
+                text += `\n`;
+            }
+
+            triggerFileDownload(text, `NutriPlan_4_Week_Diet_Chart.txt`);
+        }
+
+        function downloadGroceryListAsText() {
+            if (!activePlan) return;
+            const isFullMonth = document.getElementById('modal-title').innerText.includes("4-Week");
+            const targetWeeks = isFullMonth ? [1, 2, 3, 4] : [currentWeek];
+
+            const totals = {};
+            targetWeeks.forEach(wNum => {
+                const weekData = activePlan.weeks[wNum];
+                DAYS.forEach(day => {
+                    const dayObj = weekData.days[day];
+                    [dayObj.breakfast, dayObj.mSnack, dayObj.lunch, dayObj.eSnack, dayObj.dinner].forEach(meal => {
+                        meal.ingredients.forEach(ing => {
+                            const info = INGREDIENT_QUANTITY_LOOKUP[ing] || { qty: 100, unit: "g" };
+                            if (!totals[ing]) totals[ing] = { qty: 0, unit: info.unit };
+                            totals[ing].qty += info.qty;
+                        });
+                    });
+                });
+            });
+
+            let text = `==================================================\n`;
+            text += `  NUTRIPLAN - GROCERY SHOPPING LIST\n`;
+            text += `  (${isFullMonth ? "Full 4-Week Bulk" : "Week " + currentWeek})\n`;
+            text += `==================================================\n\n`;
+
+            Object.keys(totals).forEach(ing => {
+                const itemData = totals[ing];
+                const formattedQty = formatQuantity(itemData.qty, itemData.unit);
+                text += `[ ] ${ing} - ${formattedQty}\n`;
+            });
+
+            triggerFileDownload(text, isFullMonth ? `NutriPlan_4Week_Grocery_List.txt` : `NutriPlan_Week_${currentWeek}_Grocery_List.txt`);
+        }
+
+        function triggerFileDownload(content, filename) {
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function resetToForm() {
+            document.getElementById('results-section').classList.add('hidden');
+            document.getElementById('reset-btn').classList.add('hidden');
+            document.getElementById('form-section').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function scrollToForm() {
+            document.getElementById('form-section').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
